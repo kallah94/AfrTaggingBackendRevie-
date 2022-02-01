@@ -1,0 +1,6 @@
+projectKey=Afr_tagging
+serverUrl=http://localhost:9000
+serverVersion=9.0.1.46107
+dashboardUrl=http://localhost:9000/dashboard?id=Afr_tagging
+ceTaskId=AXubXVeC6NKttKd_upM7
+ceTaskUrl=http://localhost:9000/api/ce/task?id=AXubXVeC6NKttKd_upM7
