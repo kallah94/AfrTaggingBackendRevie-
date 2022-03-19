@@ -12,6 +12,7 @@ class Person(models.Model):
     last_name = models.CharField(max_length=255)
     first_name = models.CharField(max_length=255)
     age = models.IntegerField()
+    avatar = models.FileField(upload_to='images/persons', null=True, blank=True)
 
     class Meta:
         abstract = True
@@ -27,6 +28,7 @@ class Manager(Person):
 
 class Country(models.Model):
     name = models.CharField(max_length=255, unique=True)
+    icon = models.FileField(upload_to='images/countries', null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -35,6 +37,7 @@ class Country(models.Model):
 class League(models.Model):
     name = models.CharField(max_length=255)
     country = models.ForeignKey(Country, on_delete=models.DO_NOTHING, null=True)
+    icon = models.FileField(upload_to='images/leagues', null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -44,6 +47,7 @@ class Team(models.Model):
     name = models.CharField(max_length=255, unique=True)
     leagues = models.ManyToManyField(League)
     country = models.ForeignKey(Country, on_delete=models.CASCADE, null=True)
+    icon = models.FileField(upload_to='images/teams', null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -73,6 +77,11 @@ class Attribute(models.Model):
         return self.name
 
 
+class PlayerPosition(models.Model):
+    code = models.CharField(max_length=4, unique=True)
+    description = models.CharField(max_length=255)
+
+
 class Player(Teammate):
     class StatusChoices(models.TextChoices):
         field_player = 'field_player'
@@ -86,15 +95,23 @@ class Player(Teammate):
     number = models.IntegerField()
     strong_feet = models.CharField(max_length=255, choices=StrongFeet.choices)
     height = models.IntegerField()
+    positions = models.ManyToManyField(PlayerPosition)
 
 
 class Season(models.Model):
     begin = models.DateField()
     end = models.DateField()
 
+    def __str__(self):
+        return self.begin.__str__() + ' ' + self.end.__str__()
+
 
 class GameVideo(models.Model):
     video = models.FileField(upload_to='videos/games/%Y/%m/%d', null=False, blank=False)
+
+
+class SystemImage(models.Model):
+    image = models.FileField(upload_to='systems/%Y/%m/%d', null=False, blank=False)
 
 
 class Game(models.Model):
@@ -151,6 +168,14 @@ class Contract(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
 
 
-class PlayerPosition(models.Model):
-    code = models.CharField(max_length=4)
-    description = models.CharField(max_length=255)
+class SystemJeu(models.Model):
+    code = models.CharField(max_length=255)
+    style = models.CharField(max_length=255)
+    image = models.OneToOneField(SystemImage, on_delete=models.CASCADE)
+
+
+class GameMetaData(models.Model):
+    systems_team_home = JSONField()
+    systems_team_visitor = JSONField()
+    change_team_home = JSONField()
+    change_team_visitor = JSONField()
